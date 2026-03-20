@@ -127,7 +127,6 @@
             transform: translateY(0);
         }
 
-        /* Discord Embed Preview */
         .discord-embed {
             background: #2c2f33;
             border-left: 4px solid #5b9fd4;
@@ -200,7 +199,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- Form Section -->
         <div class="form-section">
             <h1>📤 Post to Discord</h1>
             <p class="subtitle">Create a clean embed message</p>
@@ -213,6 +211,12 @@
                 <label>Select Channel</label>
                 <select id="channelSelect">
                     <option value="">-- Choose a channel --</option>
+                    <option value="announcements"># announcements</option>
+                    <option value="mod-announcements"># mod-announcements</option>
+                    <option value="info"># info</option>
+                    <option value="paid-roles"># paid-roles</option>
+                    <option value="rules"># rules</option>
+                    <option value="request-middleman"># request-middleman</option>
                 </select>
             </div>
 
@@ -257,7 +261,6 @@ Supports:
             <div id="statusMessage" class="status-message"></div>
         </div>
 
-        <!-- Preview Section -->
         <div class="preview-section">
             <h1>👁️ Preview</h1>
             <p class="subtitle">See how it looks in Discord</p>
@@ -271,41 +274,27 @@ Supports:
             </div>
         </div>
     </div>
-    <script src="config.js"></script>
+
     <script>
-        // Configure your webhooks here
+        // Webhooks configuration
         const WEBHOOKS = {
-            "announcements": "",
-            "mod-announcements": "",
-            "info": "",
-            "paid-roles": "",
-            "rules": "",
-            "request-middleman": "",
+            "announcements": "https://discord.com/api/webhooks/1483854676934918225/_2mmWLi1PuBxV58ikEXo1aupaGCWUPyYijmQqhROIvgwD8UW54xW3UTNW4cCwBDHHmH-",
+            "mod-announcements": "https://discord.com/api/webhooks/1483871790164869140/-QJ7GO4J6SsPggzmBWekYmLfRdfmA5FiWUnsmIhOdaB59OEMK6Lpn853zKGTZGQZvkl0",
+            "info": "https://discord.com/api/webhooks/1483855941349937242/gUrGal0FXsbGBggpcOuUJs1RUB9xsGtPDMqkqRD_7WzAW3eYEdHfDtDRyGvGh9ILuXMC",
+            "paid-roles": "https://discord.com/api/webhooks/1483854664150552666/niZOU25_tQZeFUBwdQCL9mtZJ9q29UlajbVGjbokzr1QuHbvmHGPITLW1bU6EdWNRzfT",
+            "rules": "https://discord.com/api/webhooks/1483857076152303667/36nAl0cUhsM5dZc0B2oqPTcRFW2tuiYFq8cYqNfp7qzrn77nyKhkwYxVek8j0oBPcJr",
+            "request-middleman": "https://discord.com/api/webhooks/1483857172382355667/MiSm48_r0l9U1BU8HVk3XBRGHlBxorVSJOhMCCEJxBc7aiXB58atEukdKGzEUg70ldHx",
         };
 
         let selectedColor = "#4190d4";
 
-        // Populate channel dropdown
-        function populateChannels() {
-            const select = document.getElementById('channelSelect');
-            Object.keys(WEBHOOKS).forEach(channel => {
-                const option = document.createElement('option');
-                option.value = channel;
-                option.textContent = `# ${channel}`;
-                select.appendChild(option);
-            });
-        }
-
-        // Update preview as user types
         document.getElementById('titleInput').addEventListener('input', updatePreview);
         document.getElementById('messageInput').addEventListener('input', updatePreview);
 
         function selectColor(color, element) {
-            // Remove selected class from all
             document.querySelectorAll('.color-option').forEach(el => {
                 el.classList.remove('selected');
             });
-            // Add to clicked element
             element.classList.add('selected');
             selectedColor = color;
             updatePreview();
@@ -314,7 +303,6 @@ Supports:
         function updatePreview() {
             const title = document.getElementById('titleInput').value;
             const message = document.getElementById('messageInput').value;
-            
             const embedPreview = document.getElementById('embedPreview');
             
             if (!title && !message) {
@@ -371,24 +359,21 @@ Supports:
             }
 
             const webhookUrl = WEBHOOKS[channel];
-            if (!webhookUrl || webhookUrl.includes('YOUR_')) {
-                statusEl.textContent = '❌ Webhook not configured for this channel!';
+            if (!webhookUrl) {
+                statusEl.textContent = '❌ Webhook not configured!';
                 statusEl.className = 'status-message status-error';
                 return;
             }
 
-            // Convert hex to RGB for Discord embed
             const rgb = hexToRgb(selectedColor);
             const color = (rgb.r << 16) + (rgb.g << 8) + rgb.b;
 
-            // Create Discord embed
             const embed = {
                 title: title || undefined,
                 description: message,
                 color: color
             };
 
-            // Remove undefined fields
             Object.keys(embed).forEach(key => embed[key] === undefined && delete embed[key]);
 
             const payload = {
@@ -414,7 +399,7 @@ Supports:
                         statusEl.style.display = 'none';
                     }, 3000);
                 } else {
-                    statusEl.textContent = '❌ Error posting to Discord. Check your webhook URL.';
+                    statusEl.textContent = '❌ Error posting to Discord.';
                     statusEl.className = 'status-message status-error';
                 }
             })
@@ -424,8 +409,6 @@ Supports:
             });
         }
 
-        // Initialize
-        populateChannels();
         updatePreview();
     </script>
 </body>
